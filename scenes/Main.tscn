@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://main"]
+
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1_plr"]
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_scr"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_scr")
+
+[node name="Player" parent="." instance=ExtResource("1_plr")] 
+position = Vector2(200, 300)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 3
+anchor_right = 1.0
+offset_bottom = 50.0
+
+[node name="Score" type="Label" parent="CanvasLayer/HUD"]
+text = "Score: 0"
+theme_override_font_sizes/font_size = 24
+position = Vector2(16, 8)
+
+[node name="Lives" type="Label" parent="CanvasLayer/HUD"]
+text = "Lives: 3"
+theme_override_font_sizes/font_size = 24
+position = Vector2(200, 8)
