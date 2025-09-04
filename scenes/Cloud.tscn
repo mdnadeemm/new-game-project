@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cloud"]
+
+[ext_resource type="Script" uid="uid://61dcp7jne04l" path="res://scripts/Cloud.gd" id="1_cl"]
+
+[node name="Cloud" type="Node2D"]
+script = ExtResource("1_cl")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]

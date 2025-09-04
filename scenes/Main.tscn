@@ -1,10 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://main"]
+[gd_scene load_steps=5 format=3 uid="uid://main"]
 
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1_plr"]
-[ext_resource type="Script" uid="uid://cs7ttwl2lnll" path="res://scripts/Main.gd" id="1_scr"]
+[ext_resource type="Script" uid="uid://cs7ttwl2lnll" path="res://scripts/main.gd" id="1_scr"]
+[ext_resource type="PackedScene" path="res://scenes/Background.tscn" id="2_bg"]
+[ext_resource type="Script" uid="uid://vf6sxc83dbh0" path="res://scripts/CloudSpawner.gd" id="3_cloudsp"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_scr")
+
+[node name="Background" parent="." instance=ExtResource("2_bg")]
+
+[node name="Clouds" type="Node2D" parent="."]
+script = ExtResource("3_cloudsp")
 
 [node name="Player" parent="." instance=ExtResource("1_plr")]
 position = Vector2(200, 300)
