@@ -46,3 +46,12 @@ offset_right = -900.0
 offset_bottom = -593.0
 theme_override_font_sizes/font_size = 24
 text = "Lives: 3"
+
+[node name="Time" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 0
+offset_left = -870.0
+offset_top = -627.0
+offset_right = -754.0
+offset_bottom = -593.0
+theme_override_font_sizes/font_size = 24
+text = "Time: 6"

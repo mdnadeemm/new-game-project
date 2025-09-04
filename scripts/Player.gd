@@ -10,7 +10,17 @@ var size_index: int = 1 # 0..len-1
 var lives: int = 3
 @export var move_speed: float = 300.0
 
+# Visuals
+var base_color: Color = Color.hex(0x42a5f5ff)
+var flash_timer: Timer
+
 func _ready() -> void:
+    # Create a one-shot timer to manage temporary color flashes
+    flash_timer = Timer.new()
+    flash_timer.one_shot = true
+    flash_timer.wait_time = 1.0
+    add_child(flash_timer)
+    flash_timer.timeout.connect(Callable(self, "_on_flash_timeout"))
     _apply_shape()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -58,7 +68,29 @@ func _apply_shape() -> void:
     var pts: PackedVector2Array = Shapes.get_shape_points(current_shape, size_scale)
     if is_instance_valid(poly):
         poly.polygon = pts
-        poly.color = Color.hex(0x42a5f5ff)
+        if not is_flashing():
+            poly.color = base_color
     if is_instance_valid(collision):
         collision.polygon = pts
     emit_signal("shape_changed", current_shape, size_scale)
+
+func is_flashing() -> bool:
+    return is_instance_valid(flash_timer) and flash_timer.time_left > 0.0
+
+func flash_good(duration: float = 1.0) -> void:
+    _flash(Color(0, 1, 0, 1), duration)
+
+func flash_bad(duration: float = 1.0) -> void:
+    _flash(Color(1, 0, 0, 1), duration)
+
+func _flash(c: Color, duration: float) -> void:
+    if is_instance_valid(poly):
+        poly.color = c
+    if flash_timer:
+        flash_timer.stop()
+        flash_timer.wait_time = duration
+        flash_timer.start()
+
+func _on_flash_timeout() -> void:
+    if is_instance_valid(poly):
+        poly.color = base_color

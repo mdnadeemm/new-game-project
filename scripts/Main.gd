@@ -3,6 +3,7 @@ extends Node2D
 @onready var player: Area2D = $Player
 @onready var hud_score: Label = $CanvasLayer/HUD/Score
 @onready var hud_lives: Label = $CanvasLayer/HUD/Lives
+@onready var hud_time: Label = $CanvasLayer/HUD/Time
 
 var score: int = 0
 var lives: int = 3
@@ -10,15 +11,27 @@ var time_accum := 0.0
 @export var spawn_interval: float = 1.2
 @export var obstacle_speed: float = 220.0
 
+# Countdown timer (seconds)
+var countdown: float = 6.0
+const COUNTDOWN_BONUS: float = 6.0
+
 func _ready() -> void:
 	randomize()
 	_update_hud()
+	_update_time_label()
 
 func _process(delta: float) -> void:
 	time_accum += delta
 	if time_accum >= spawn_interval:
 		time_accum = 0.0
 		_spawn_obstacle()
+
+	# Countdown ticking
+	countdown -= delta
+	if countdown <= 0.0:
+		_handle_timeout()
+	else:
+		_update_time_label()
 
 func _spawn_obstacle() -> void:
 	var scene := load("res://scenes/Obstacle.tscn") as PackedScene
@@ -55,10 +68,18 @@ func _on_obstacle_area_entered(_area: Area2D, obstacle: Area2D) -> void:
 				ok = is_equal_approx(sizes[p_size_index], o_scale)
 	if ok:
 		score += 1
+		countdown += COUNTDOWN_BONUS
 		_update_hud()
+		_update_time_label()
+		# Visual feedback: green flash for correct hit
+		if player and player.has_method("flash_good"):
+			player.call("flash_good", 1.0)
 		obstacle.queue_free()
 	else:
 		_lose_life()
+		# Visual feedback: red flash for wrong hit
+		if player and player.has_method("flash_bad"):
+			player.call("flash_bad", 1.0)
 		obstacle.queue_free()
 
 func _lose_life() -> void:
@@ -73,3 +94,17 @@ func _game_over() -> void:
 func _update_hud() -> void:
 	hud_score.text = "Score: %d" % score
 	hud_lives.text = "Lives: %d" % lives
+
+func _update_time_label() -> void:
+	if is_instance_valid(hud_time):
+		var shown := int(ceil(max(countdown, 0.0)))
+		hud_time.text = "Time: %d" % shown
+
+func _handle_timeout() -> void:
+	# Time ran out: lose a life and reset countdown if game continues
+	countdown = 0.0
+	_update_time_label()
+	_lose_life()
+	if lives > 0:
+		countdown = COUNTDOWN_BONUS
+		_update_time_label()
